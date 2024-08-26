@@ -9,7 +9,6 @@
       background-color: #f5f5f5;
       font-family: 'Arial', sans-serif;
       color: #2c2c2c;
-      text-align: left;
       padding: 20px;
     }
 
@@ -17,8 +16,8 @@
       font-family: 'Courier New', Courier, monospace;
       display: flex;
       justify-content: space-between;
-      width: 100%;
       color: #2c2c2c;
+      margin-bottom: 10px;
     }
 
     .result div {
@@ -44,9 +43,14 @@
   <div id="history"></div>
 
   <script>
+    function updateResult(total, remainder) {
+      document.getElementById('total').textContent = `${total}円`;
+      document.getElementById('remainder').textContent = `${remainder}枚`;
+    }
+
     function updateHistory(total, remainder) {
       const date = new Date();
-      const formattedDate = `${date.getFullYear()}${(date.getMonth()+1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}.${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+      const formattedDate = `${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}.${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
       
       const historyEntry = `${formattedDate} | 換金額: ${total}円 | 余り: ${remainder}枚`;
       const historyDiv = document.getElementById('history');
@@ -57,8 +61,11 @@
       historyDiv.appendChild(newEntry);
     }
 
-    // デモ用のサンプルデータ
-    updateHistory(9390, 10); // この関数を新しい計算結果ごとに呼び出す
+    // サンプルデータ
+    const total = 9390;
+    const remainder = 10;
+    updateResult(total, remainder);
+    updateHistory(total, remainder);
   </script>
 
 </body>
