@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
-            background-color: #f4f4f9; 
-            color: #333; 
+            background-color: #f4f4f9; /* 明るいグレーをベースにした背景色 */
+            color: #333; /* ダークグレーのテキスト色 */
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             display: flex;
             flex-direction: column;
@@ -175,7 +175,7 @@
             const result = calculateExchange(medals);
 
             const now = new Date();
-            const formattedDate = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            const formattedTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
             document.getElementById('amount').textContent = `${result.amount}円`;
             document.getElementById('remainder').textContent = `${result.remainder}枚`;
@@ -189,7 +189,7 @@
 
             const newItem = document.createElement('div');
             newItem.className = 'history-item';
-            newItem.textContent = `所持コインを${medals}枚 - ${formattedDate} - 換金額: ${result.amount}円, 余り: ${result.remainder}枚`;
+            newItem.textContent = `${formattedTime} ${medals}枚 ${result.amount}円 余り ${result.remainder}枚`;
             history.appendChild(newItem);
         }
 
@@ -215,37 +215,40 @@
         }
 
         async function fetchWeather() {
-            const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=35.1815&longitude=136.9066&daily=temperature_2m_max,precipitation_probability_sum&timezone=Asia/Tokyo', {
-                method: 'GET'
-            });
-            const data = await response.json();
-            const today = new Date().toISOString().split('T')[0];
+            try {
+                const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=35.1815&longitude=136.9066&daily=temperature_2m_max,precipitation_probability_sum&timezone=Asia/Tokyo');
+                const data = await response.json();
+                const today = new Date().toISOString().split('T')[0];
 
-            const weather = data.daily;
-            const temperature = weather.temperature_2m_max[0];
-            const precipitationProbability = weather.precipitation_probability_sum[0];
+                const weather = data.daily;
+                const temperature = weather.temperature_2m_max[0];
+                const precipitationProbability = weather.precipitation_probability_sum[0];
 
-            // 色の設定
-            let color = '#ffffff'; // 白
-            if (precipitationProbability > 75) {
-                color = '#ff0000'; // 赤
-            } else if (precipitationProbability > 50) {
-                color = '#ffff00'; // 黄
-            } else if (precipitationProbability > 25) {
-                color = '#00ff00'; // 緑
-            } else if (precipitationProbability > 10) {
-                color = '#0000ff'; // 青
+                // 色の設定
+                let color = '#ffffff'; // 白
+                if (precipitationProbability > 75) {
+                    color = '#ff0000'; // 赤
+                } else if (precipitationProbability > 50) {
+                    color = '#ffff00'; // 黄
+                } else if (precipitationProbability > 25) {
+                    color = '#00ff00'; // 緑
+                } else if (precipitationProbability > 10) {
+                    color = '#0000ff'; // 青
+                }
+
+                const weatherEmoji = precipitationProbability > 50 ? '🌧️' : '☀️';
+
+                document.getElementById('weather').innerHTML = `
+                    <div class="weather-info">
+                        <span>気温: ${temperature}℃</span>
+                        <span style="color: ${color};">降水確率: ${precipitationProbability}%</span>
+                        <span>${weatherEmoji}</span>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Weather data fetch error:', error);
+                document.getElementById('weather').innerHTML = '天気情報の取得に失敗しました';
             }
-
-            const weatherEmoji = precipitationProbability > 50 ? '🌧️' : '☀️';
-
-            document.getElementById('weather').innerHTML = `
-                <div class="weather-info">
-                    <span>気温: ${temperature}℃</span>
-                    <span style="color: ${color};">降水確率: ${precipitationProbability}%</span>
-                    <span>${weatherEmoji}</span>
-                </div>
-            `;
         }
 
         document.getElementById('exchange-btn').addEventListener('click', updateResult);
