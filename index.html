@@ -5,41 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
-            background-color: #f0f0f0;
-            color: #333;
-            font-family: Arial, sans-serif;
+            background-color: #444654; /* 背景色 */
+            color: #d1d5db;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            padding-top: 20px;
+            padding-top: 40px;
+            margin: 0;
         }
         h1 {
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            font-size: 24px;
+            color: #e5e7eb;
         }
         #medals-input {
             margin-bottom: 20px;
+            width: 100%;
+            max-width: 300px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        input[type="number"]::placeholder {
+            color: #9ca3af;
         }
         #exchange-btn {
-            margin-bottom: 20px;
-            padding: 10px 20px;
+            width: 100%;
+            max-width: 300px;
+            padding: 15px;
             background-color: #4CAF50;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+        #exchange-btn:hover {
+            background-color: #45a049;
         }
         #result {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
             margin-bottom: 20px;
+            width: 100%;
+            max-width: 300px;
         }
         .result-item {
             display: flex;
             justify-content: space-between;
-            width: 300px;
+            width: 100%;
+            margin-bottom: 5px;
         }
         .label {
             font-weight: bold;
@@ -51,11 +78,13 @@
         }
         #history {
             width: 100%;
-            background-color: #fff;
-            padding: 10px;
+            max-width: 300px;
+            background-color: #333;
+            padding: 15px;
             margin-top: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            color: #e5e7eb;
         }
         .history-item {
             font-size: 0.9em;
@@ -64,17 +93,16 @@
         #closing-time {
             margin-bottom: 20px;
             font-size: 18px;
-            color: #666;
+            color: #9ca3af;
         }
     </style>
 </head>
 <body>
-    <h1>換金計算機</h1>
+    <h1>パチンコ換金計算機</h1>
     <div id="closing-time"></div>
     
     <div id="medals-input">
-        <label for="medals">所持メダル:</label>
-        <input type="number" id="medals" value="0">
+        <input type="number" id="medals" placeholder="メダル枚数を入力">
     </div>
 
     <button id="exchange-btn">換金</button>
