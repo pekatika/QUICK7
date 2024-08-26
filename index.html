@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
-            background-color: #444654; /* ChatGPTの背景色 */
+            background-color: #444654; /* いい感じの背景色 */
             color: #d1d5db;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             display: flex;
@@ -93,12 +93,29 @@
         #closing-time {
             margin-bottom: 20px;
             font-size: 18px;
-            color: #f0f0f0; /* 見やすい白色 */
+            color: #e5e7eb;
             font-weight: bold;
+            text-align: center;
         }
         #weather {
             font-size: 16px;
             color: #d1d5db;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .weather-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .weather-info span {
+            margin-left: 10px;
+        }
+        #no-history {
+            font-size: 14px;
+            color: #9ca3af;
+            text-align: center;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -123,7 +140,9 @@
             <span class="value" id="remainder"></span>
         </div>
     </div>
-    <div id="history"></div>
+    <div id="history">
+        <div id="no-history">ここに計算結果の履歴が表示されます</div>
+    </div>
 
     <script>
         function calculateExchange(medals) {
@@ -156,6 +175,12 @@
             document.getElementById('remainder').textContent = `${result.remainder}枚`;
 
             const history = document.getElementById('history');
+            const noHistory = document.getElementById('no-history');
+            
+            if (history.children.length === 1) { // 初回表示時
+                noHistory.style.display = 'none'; // 初回の「履歴が表示されます」を非表示にする
+            }
+
             const newItem = document.createElement('div');
             newItem.className = 'history-item';
             newItem.textContent = `${formattedDate} - 換金額: ${result.amount}円, 余り: ${result.remainder}枚`;
@@ -184,16 +209,33 @@
         }
 
         async function fetchWeather() {
-            const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=35.1815&longitude=136.9066&hourly=precipitation_probability', {
+            const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=35.1815&longitude=136.9066&daily=temperature_2m_max,precipitation_probability_sum&timezone=Asia/Tokyo', {
                 method: 'GET'
             });
             const data = await response.json();
-            const today = new Date();
-            const todayDateString = today.toISOString().split('T')[0];
-            const todayWeather = data.hourly.time.find((time, index) => time.startsWith(todayDateString));
+            const today = new Date().toISOString().split('T')[0];
 
-            const precipitationProbability = data.hourly.precipitation_probability[0];
-            document.getElementById('weather').textContent = `愛知県名古屋市の当日の降水確率: ${precipitationProbability}%`;
+            const weather = data.daily;
+            const temperature = weather.temperature_2m_max[0];
+            const precipitationProbability = weather.precipitation_probability_sum[0];
+
+            // 色の設定
+            let color = '#ffffff'; // 白
+            if (precipitationProbability > 75) {
+                color = '#ff0000'; // 赤
+            } else if (precipitationProbability > 50) {
+                color = '#0000ff'; // 青
+            } else if (precipitationProbability > 25) {
+                color = '#00ff00'; // 緑
+            }
+
+            document.getElementById('weather').innerHTML = `
+                <div class="weather-info">
+                    <span>気温: ${temperature}℃</span>
+                    <span style="color: ${color}">降水確率: ${precipitationProbability}%</span>
+                    <span>☀️</span>
+                </div>
+            `;
         }
 
         document.getElementById('exchange-btn').addEventListener('click', updateResult);
