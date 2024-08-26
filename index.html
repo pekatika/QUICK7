@@ -17,6 +17,19 @@
         h1 {
             margin-bottom: 20px;
         }
+        #medals-input {
+            margin-bottom: 20px;
+        }
+        #exchange-btn {
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
         #result {
             display: flex;
             flex-direction: column;
@@ -48,10 +61,24 @@
             font-size: 0.9em;
             margin-bottom: 5px;
         }
+        #closing-time {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
-    <h1>パチンコ換金計算機</h1>
+    <h1>換金計算機</h1>
+    <div id="closing-time"></div>
+    
+    <div id="medals-input">
+        <label for="medals">所持メダル:</label>
+        <input type="number" id="medals" value="0">
+    </div>
+
+    <button id="exchange-btn">換金</button>
+    
     <div id="result">
         <div class="result-item">
             <span class="label">換金額:</span>
@@ -85,7 +112,7 @@
         }
 
         function updateResult() {
-            const medals = 265; // Example value
+            const medals = parseInt(document.getElementById('medals').value);
             const result = calculateExchange(medals);
 
             const now = new Date();
@@ -101,7 +128,29 @@
             history.appendChild(newItem);
         }
 
-        updateResult(); // Call this function whenever you want to update the result
+        function updateClosingTime() {
+            const closingTime = new Date();
+            closingTime.setHours(23, 50, 0); // 閉店時間を23:50に設定
+
+            function updateTime() {
+                const now = new Date();
+                const timeDifference = closingTime - now;
+                if (timeDifference >= 0) {
+                    const hours = Math.floor(timeDifference / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+                    document.getElementById('closing-time').textContent = `閉店まで ${hours}時間${minutes}分${seconds}秒`;
+                } else {
+                    document.getElementById('closing-time').textContent = "閉店しました";
+                }
+            }
+
+            updateTime();
+            setInterval(updateTime, 1000);
+        }
+
+        document.getElementById('exchange-btn').addEventListener('click', updateResult);
+        updateClosingTime();
     </script>
 </body>
 </html>
