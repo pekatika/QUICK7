@@ -1,109 +1,107 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>パチンコ換金計算機</title>
-  <style>
-    /* 基本設定 */
-    body {
-      background-color: #ffffff;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      color: #333333;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-
-    .container {
-      background-color: #f8f8f8;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
-    }
-
-    .result {
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 24px;
-      color: #333333;
-      margin-bottom: 20px;
-    }
-
-    .result div {
-      margin: 10px 0;
-    }
-
-    #history {
-      font-size: 14px;
-      color: #666666;
-      text-align: left;
-      margin-top: 20px;
-      padding: 10px;
-      background-color: #ffffff;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    }
-
-    #history div {
-      white-space: nowrap;
-      overflow-x: auto;
-      padding-bottom: 5px;
-    }
-
-    /* モバイル対応 */
-    @media (max-width: 600px) {
-      .result {
-        font-size: 20px;
-      }
-
-      #history {
-        font-size: 12px;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-color: #f0f0f0;
+            color: #333;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        #result {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            width: 300px;
+        }
+        .label {
+            font-weight: bold;
+            width: 100px;
+        }
+        .value {
+            text-align: right;
+            flex-grow: 1;
+        }
+        #history {
+            width: 100%;
+            background-color: #fff;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+        .history-item {
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+    </style>
 </head>
 <body>
-
-  <div class="container">
-    <div class="result">
-      <div>換金額: <span id="total">0円</span></div>
-      <div>余り: <span id="remainder">0枚</span></div>
+    <h1>パチンコ換金計算機</h1>
+    <div id="result">
+        <div class="result-item">
+            <span class="label">換金額:</span>
+            <span class="value" id="amount"></span>
+        </div>
+        <div class="result-item">
+            <span class="label">余り:</span>
+            <span class="value" id="remainder"></span>
+        </div>
     </div>
-
     <div id="history"></div>
-  </div>
 
-  <script>
-    function updateResult(total, remainder) {
-      document.getElementById('total').textContent = `${total}円`;
-      document.getElementById('remainder').textContent = `${remainder}枚`;
-    }
+    <script>
+        function calculateExchange(medals) {
+            const rates = [
+                { count: 253, amount: 4900 },
+                { count: 51, amount: 980 },
+                { count: 11, amount: 190 }
+            ];
 
-    function updateHistory(total, remainder) {
-      const date = new Date();
-      const formattedDate = `${date.getFullYear()}${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}.${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
-      
-      const historyEntry = `${formattedDate} | 換金額: ${total}円 | 余り: ${remainder}枚`;
-      const historyDiv = document.getElementById('history');
-      
-      const newEntry = document.createElement('div');
-      newEntry.textContent = historyEntry;
-      
-      historyDiv.appendChild(newEntry);
-    }
+            let totalAmount = 0;
+            let remainingMedals = medals;
 
-    // サンプルデータ
-    const total = 9390;
-    const remainder = 10;
-    updateResult(total, remainder);
-    updateHistory(total, remainder);
-  </script>
+            for (const rate of rates) {
+                const numberOfSets = Math.floor(remainingMedals / rate.count);
+                totalAmount += numberOfSets * rate.amount;
+                remainingMedals -= numberOfSets * rate.count;
+            }
 
+            return { amount: totalAmount, remainder: remainingMedals };
+        }
+
+        function updateResult() {
+            const medals = 265; // Example value
+            const result = calculateExchange(medals);
+
+            const now = new Date();
+            const formattedDate = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}.${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+
+            document.getElementById('amount').textContent = `${result.amount}円`;
+            document.getElementById('remainder').textContent = `${result.remainder}枚`;
+
+            const history = document.getElementById('history');
+            const newItem = document.createElement('div');
+            newItem.className = 'history-item';
+            newItem.textContent = `${formattedDate} - 換金額: ${result.amount}円, 余り: ${result.remainder}枚`;
+            history.appendChild(newItem);
+        }
+
+        updateResult(); // Call this function whenever you want to update the result
+    </script>
 </body>
 </html>
