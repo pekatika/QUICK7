@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>クイセ計算機</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <h1>クイセ計算機</h1>
+    <label for="medals">所持メダル枚数:</label>
+    <input type="number" id="medals" min="0" placeholder="メダル枚数を入力">
+    <button onclick="calculate()">換金</button>
+    <p id="result"></p>
+
+    <script>
+        function calculate() {
+            let medals = parseInt(document.getElementById('medals').value);
+            let resultText = "";
+            let exchangeRates = [
+                { rate: 253, value: 4900 },
+                { rate: 51, value: 980 },
+                { rate: 11, value: 190 }
+            ];
+            let totalMoney = 0;
+            let remainingMedals = medals;
+
+            for (let i = 0; i < exchangeRates.length; i++) {
+                if (remainingMedals >= exchangeRates[i].rate) {
+                    let numExchanges = Math.floor(remainingMedals / exchangeRates[i].rate);
+                    totalMoney += numExchanges * exchangeRates[i].value;
+                    remainingMedals = remainingMedals % exchangeRates[i].rate;
+                }
+            }
+
+            resultText = `換金額は ${totalMoney}円で余りは ${remainingMedals} 枚です。`;
+            document.getElementById('result').innerText = resultText;
+        }
+    </script>
+</body>
+</html>
