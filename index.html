@@ -5,70 +5,152 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>クイセ換金計算機</title>
     <style>
+        /* 全体のスタイル */
         body {
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            background-color: #f5f5f7;
-            color: #333;
+            background-color: #343a40;
+            color: #f8f9fa;
             margin: 0;
             padding: 0;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             text-align: center;
         }
 
+        /* タイマーのスタイル */
+        .timer {
+            background-color: #495057;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+
+        /* メインコンテナのスタイル */
         .container {
-            background-color: white;
+            background-color: #495057;
             border-radius: 20px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
             padding: 30px;
             max-width: 360px;
             width: 90%;
+            margin-top: 20px;
         }
 
+        /* タイトルのスタイル */
         h1 {
             font-size: 1.8em;
             margin-bottom: 30px;
-            color: #000;
+            color: #f8f9fa;
             line-height: 1.2;
         }
 
+        /* 入力フィールドとボタンのスタイル */
         input, button {
             width: 100%;
             padding: 15px;
-            margin: 15px 0;
+            margin: 10px 0;
             font-size: 1.2em;
-            border: 1px solid #ccc;
+            border: none;
             border-radius: 12px;
             box-sizing: border-box;
         }
 
+        /* 入力フィールドのスタイル */
+        input {
+            background-color: #6c757d;
+            color: #fff;
+        }
+
+        /* ボタンのスタイル */
         button {
-            background-color: #007aff;
-            color: white;
-            border: none;
+            background-color: #007bff;
+            color: #fff;
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
 
         button:hover {
-            background-color: #005eb8;
+            background-color: #0056b3;
         }
 
+        /* 結果表示のスタイル */
         #result {
             margin-top: 20px;
             font-size: 1.4em;
-            color: #555;
+            color: #f8f9fa;
         }
 
         #result span {
             font-weight: bold;
-            color: #000;
+        }
+
+        /* 履歴セクションのスタイル */
+        .history-container {
+            background-color: #495057;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 360px;
+            width: 90%;
+            margin: 20px 0;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+
+        .history-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #f8f9fa;
+        }
+
+        .history-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .history-item {
+            background-color: #6c757d;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            color: #fff;
+        }
+
+        /* 履歴をクリアボタンのスタイル */
+        .clear-button {
+            background-color: #dc3545;
+            margin-top: 10px;
+        }
+
+        .clear-button:hover {
+            background-color: #c82333;
+        }
+
+        /* スクロールバーのスタイル（オプション） */
+        .history-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .history-container::-webkit-scrollbar-thumb {
+            background-color: #6c757d;
+            border-radius: 4px;
+        }
+
+        .history-container::-webkit-scrollbar-track {
+            background-color: #495057;
         }
     </style>
 </head>
 <body>
+    <!-- タイマー表示 -->
+    <div class="timer" id="timer"></div>
+
+    <!-- メインコンテナ -->
     <div class="container">
         <h1>クイセ換金計算機</h1>
         <input type="number" id="medals" min="0" placeholder="メダル枚数を入力">
@@ -76,10 +158,46 @@
         <div id="result"></div>
     </div>
 
+    <!-- 履歴コンテナ -->
+    <div class="history-container">
+        <div class="history-title">計算履歴</div>
+        <ul id="historyList" class="history-list"></ul>
+        <button class="clear-button" onclick="clearHistory()">履歴をクリア</button>
+    </div>
+
     <script>
+        // 閉店時間のタイマーを更新する関数
+        function updateTimer() {
+            const now = new Date();
+            const closingTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 50, 0);
+
+            let timeDiff = closingTime - now;
+
+            // 翌日対応
+            if (timeDiff < 0) {
+                closingTime.setDate(closingTime.getDate() + 1);
+                timeDiff = closingTime - now;
+            }
+
+            const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+            document.getElementById('timer').textContent = `閉店まで ${hours}時間 ${minutes}分 ${seconds}秒`;
+        }
+
+        // 換金計算を行う関数
         function calculate() {
-            let medals = parseInt(document.getElementById('medals').value);
-            let exchangeRates = [
+            const medalsInput = document.getElementById('medals');
+            let medals = parseInt(medalsInput.value);
+
+            if (isNaN(medals) || medals <= 0) {
+                alert('正しいメダル枚数を入力してください。');
+                medalsInput.value = '';
+                return;
+            }
+
+            const exchangeRates = [
                 { rate: 253, value: 4900 },
                 { rate: 51, value: 980 },
                 { rate: 11, value: 190 }
@@ -89,18 +207,42 @@
 
             for (let i = 0; i < exchangeRates.length; i++) {
                 if (remainingMedals >= exchangeRates[i].rate) {
-                    let numExchanges = Math.floor(remainingMedals / exchangeRates[i].rate);
+                    const numExchanges = Math.floor(remainingMedals / exchangeRates[i].rate);
                     totalMoney += numExchanges * exchangeRates[i].value;
                     remainingMedals = remainingMedals % exchangeRates[i].rate;
                 }
             }
 
-            let resultText = `
+            const resultText = `
                 <span>換金額: ${totalMoney}円</span><br>
                 <span>余り: ${remainingMedals} 枚</span>
             `;
             document.getElementById('result').innerHTML = resultText;
+
+            addHistory(medals, totalMoney, remainingMedals);
+            medalsInput.value = '';
         }
+
+        // 計算履歴に追加する関数
+        function addHistory(medals, totalMoney, remainingMedals) {
+            const historyList = document.getElementById('historyList');
+            const historyItem = document.createElement('li');
+            historyItem.className = 'history-item';
+            historyItem.innerHTML = `
+                メダル: ${medals}枚 → 換金額: ${totalMoney}円、余り: ${remainingMedals}枚
+            `;
+            historyList.prepend(historyItem);
+        }
+
+        // 履歴をクリアする関数
+        function clearHistory() {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
+        }
+
+        // 初期化
+        setInterval(updateTimer, 1000);
+        updateTimer();
     </script>
 </body>
 </html>
