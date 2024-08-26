@@ -62,4 +62,43 @@
 
         /* 結果表示 */
         #result {
-            margin-top: 
+            margin-top: 20px;
+            font-size: 1.5em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>クイセ換金計算機</h1>
+        <input type="number" id="medals" min="0" placeholder="メダル枚数を入力">
+        <button onclick="calculate()">換金</button>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        function calculate() {
+            let medals = parseInt(document.getElementById('medals').value);
+            let resultText = "";
+            let exchangeRates = [
+                { rate: 253, value: 4900 },
+                { rate: 51, value: 980 },
+                { rate: 11, value: 190 }
+            ];
+            let totalMoney = 0;
+            let remainingMedals = medals;
+
+            for (let i = 0; i < exchangeRates.length; i++) {
+                if (remainingMedals >= exchangeRates[i].rate) {
+                    let numExchanges = Math.floor(remainingMedals / exchangeRates[i].rate);
+                    totalMoney += numExchanges * exchangeRates[i].value;
+                    remainingMedals = remainingMedals % exchangeRates[i].rate;
+                }
+            }
+
+            resultText = `換金額は ${totalMoney}円で余りは ${remainingMedals} 枚です`;
+            document.getElementById('result').innerText = resultText;
+        }
+    </script>
+</body>
+</html>
