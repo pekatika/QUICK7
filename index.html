@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>クイセ換金計算機</title>
     <style>
-        /* フォント設定 */
+        /* フォントと背景 */
         body {
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             background-color: #f5f5f7;
@@ -22,28 +22,29 @@
         /* コンテナ */
         .container {
             background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            padding: 40px;
-            max-width: 400px;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 360px;
             width: 90%;
         }
 
         /* タイトル */
         h1 {
-            font-size: 2.5em;
-            margin-bottom: 20px;
+            font-size: 1.8em;
+            margin-bottom: 30px;
             color: #000;
+            line-height: 1.2;
         }
 
-        /* 入力とボタン */
+        /* 入力フィールドとボタン */
         input, button {
             width: 100%;
             padding: 15px;
-            margin: 10px 0;
+            margin: 15px 0;
             font-size: 1.2em;
             border: 1px solid #ccc;
-            border-radius: 8px;
+            border-radius: 12px;
             box-sizing: border-box;
         }
 
@@ -63,8 +64,14 @@
         /* 結果表示 */
         #result {
             margin-top: 20px;
-            font-size: 1.5em;
+            font-size: 1.4em;
             color: #555;
+        }
+
+        /* メダルの結果を美しく表示 */
+        #result span {
+            font-weight: bold;
+            color: #000;
         }
     </style>
 </head>
@@ -96,8 +103,8 @@
                 }
             }
 
-            resultText = `換金額は ${totalMoney}円で余りは ${remainingMedals} 枚です`;
-            document.getElementById('result').innerText = resultText;
+            resultText = `換金額は <span>${totalMoney}円</span> で余りは <span>${remainingMedals} 枚</span>です。`;
+            document.getElementById('result').innerHTML = resultText;
         }
     </script>
 </body>
