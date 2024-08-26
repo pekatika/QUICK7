@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
-            background-color: #f4f4f9; /* 明るいグレーをベースにした背景色 */
-            color: #333; /* ダークグレーのテキスト色 */
+            background-color: #f0f0f0; /* 明るいグレー */
+            color: #333;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             display: flex;
             flex-direction: column;
@@ -16,106 +16,52 @@
             margin: 0;
         }
         h1 {
-            margin-bottom: 30px;
-            font-size: 24px;
-            color: #333;
+            margin-bottom: 20px;
         }
         #medals-input {
             margin-bottom: 20px;
-            width: 100%;
-            max-width: 300px;
-        }
-        input[type="number"] {
-            width: 100%;
-            padding: 15px;
-            font-size: 16px;
-            border-radius: 8px;
-            border: none;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            box-sizing: border-box;
-            margin-bottom: 10px;
-        }
-        input[type="number"]::placeholder {
-            color: #9ca3af;
         }
         #exchange-btn {
-            width: 100%;
-            max-width: 300px;
-            padding: 15px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease;
-        }
-        #exchange-btn:hover {
-            background-color: #45a049;
+            margin-bottom: 20px;
         }
         #result {
+            margin-bottom: 20px;
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
-            margin-bottom: 20px;
-            width: 100%;
-            max-width: 300px;
+            align-items: center;
+            width: 300px;
         }
         .result-item {
             display: flex;
             justify-content: space-between;
             width: 100%;
-            margin-bottom: 5px;
-        }
-        .label {
-            font-weight: bold;
-            width: 100px;
-        }
-        .value {
-            text-align: right;
-            flex-grow: 1;
+            margin-bottom: 10px;
         }
         #history {
-            width: 100%;
-            max-width: 300px;
-            background-color: #333;
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            color: #e5e7eb;
+            width: 300px;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column-reverse; /* 最新の履歴が上に来るように */
         }
         .history-item {
-            font-size: 0.9em;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 10px;
             margin-bottom: 5px;
-        }
-        #closing-time {
-            margin-bottom: 10px;
-            font-size: 18px;
-            color: #333;
-            font-weight: bold;
-            text-align: center;
-        }
-        #weather {
-            font-size: 16px;
-            color: #333;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .weather-info {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .weather-info span {
-            margin-left: 10px;
+            border-radius: 5px;
         }
         #no-history {
-            font-size: 14px;
-            color: #9ca3af;
+            color: #999;
             text-align: center;
-            margin-top: 10px;
+        }
+        #closing-time {
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        #weather {
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -123,8 +69,7 @@
     <h1>クイセ換金計算機</h1>
     
     <div id="closing-time"></div>
-    <div id="weather"></div>
-    
+
     <div id="medals-input">
         <input type="number" id="medals" placeholder="メダル枚数を入力">
     </div>
@@ -141,6 +86,7 @@
             <span class="value" id="remainder"></span>
         </div>
     </div>
+
     <div id="history">
         <div id="no-history">ここに計算結果の履歴が表示されます</div>
     </div>
@@ -183,19 +129,19 @@
             const history = document.getElementById('history');
             const noHistory = document.getElementById('no-history');
             
-            if (history.children.length === 1) { // 初回表示時
-                noHistory.style.display = 'none'; // 初回の「履歴が表示されます」を非表示にする
+            if (history.children.length === 1) {
+                noHistory.style.display = 'none';
             }
 
             const newItem = document.createElement('div');
             newItem.className = 'history-item';
             newItem.textContent = `${formattedTime} ${medals}枚 ${result.amount}円 余り ${result.remainder}枚`;
-            history.appendChild(newItem);
+            history.prepend(newItem); // 最新の履歴が一番上に来るように
         }
 
         function updateClosingTime() {
             const closingTime = new Date();
-            closingTime.setHours(23, 50, 0); // 閉店時間を23:50に設定
+            closingTime.setHours(23, 50, 0);
 
             function updateTime() {
                 const now = new Date();
@@ -216,7 +162,6 @@
 
         document.getElementById('exchange-btn').addEventListener('click', updateResult);
         updateClosingTime();
-        fetchWeather();
     </script>
 </body>
 </html>
