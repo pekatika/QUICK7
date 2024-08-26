@@ -44,6 +44,7 @@
             cursor: pointer;
             margin-bottom: 20px;
             transition: background-color 0.3s ease;
+            width: 100%;
         }
         #exchange-btn:hover {
             background-color: #0056b3;
@@ -68,6 +69,7 @@
             max-width: 600px;
             display: flex;
             flex-direction: column-reverse; /* 最新の履歴が上に来るように */
+            overflow-y: auto;
         }
         .history-item {
             background-color: #fff;
