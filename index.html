@@ -144,6 +144,10 @@
             return { amount: totalAmount, remainder: remainingMedals };
         }
 
+        function formatNumber(number) {
+            return number.toLocaleString(); // 3桁ごとにカンマを入れる
+        }
+
         function updateResult() {
             const medals = parseInt(document.getElementById('medals').value);
             if (isNaN(medals) || medals <= 0) {
@@ -156,8 +160,8 @@
             const now = new Date();
             const formattedTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
-            document.getElementById('amount').textContent = `${result.amount}円`;
-            document.getElementById('remainder').textContent = `${result.remainder}枚`;
+            document.getElementById('amount').textContent = `${formatNumber(result.amount)}円`;
+            document.getElementById('remainder').textContent = `${formatNumber(result.remainder)}枚`;
 
             const history = document.getElementById('history');
             const noHistory = document.getElementById('no-history');
@@ -168,7 +172,7 @@
 
             const newItem = document.createElement('div');
             newItem.className = 'history-item';
-            newItem.textContent = `${formattedTime} ${medals}枚 ${result.amount}円 余り ${result.remainder}枚`;
+            newItem.textContent = `${formattedTime} ${formatNumber(medals)}枚 ${formatNumber(result.amount)}円 余り ${formatNumber(result.remainder)}枚`;
             history.prepend(newItem); // 最新の履歴が一番上に来るように
         }
 
