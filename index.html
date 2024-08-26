@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
-            background-color: #f0f0f0; /* 明るいグレー */
-            color: #333;
+            background-color: #f4f4f9; /* 明るいグレーをベースにした背景色 */
+            color: #333; /* ダークグレーのテキスト色 */
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             display: flex;
             flex-direction: column;
@@ -16,36 +16,91 @@
             margin: 0;
         }
         h1 {
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            font-size: 24px;
+            color: #333;
         }
         #medals-input {
             margin-bottom: 20px;
+            width: 100%;
+            max-width: 300px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        input[type="number"]::placeholder {
+            color: #9ca3af;
         }
         #exchange-btn {
-            margin-bottom: 20px;
+            width: 100%;
+            max-width: 300px;
+            padding: 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+        #exchange-btn:hover {
+            background-color: #45a049;
         }
         #result {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
             margin-bottom: 20px;
+            width: 100%;
+            max-width: 300px;
         }
         .result-item {
             display: flex;
             justify-content: space-between;
-            width: 300px;
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        .label {
+            font-weight: bold;
+            width: 100px;
+        }
+        .value {
+            text-align: right;
+            flex-grow: 1;
         }
         #history {
             width: 100%;
-            max-width: 600px;
+            max-width: 300px;
+            background-color: #333;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            color: #e5e7eb;
         }
         .history-item {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            padding: 10px;
+            font-size: 0.9em;
             margin-bottom: 5px;
         }
-        #no-history {
-            color: #999;
+        #closing-time {
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #333;
+            font-weight: bold;
+            text-align: center;
         }
         #weather {
+            font-size: 16px;
+            color: #333;
+            text-align: center;
             margin-bottom: 20px;
         }
         .weather-info {
@@ -54,10 +109,13 @@
             justify-content: center;
         }
         .weather-info span {
-            margin: 0 5px;
+            margin-left: 10px;
         }
-        #closing-time {
-            margin-bottom: 20px;
+        #no-history {
+            font-size: 14px;
+            color: #9ca3af;
+            text-align: center;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -125,8 +183,8 @@
             const history = document.getElementById('history');
             const noHistory = document.getElementById('no-history');
             
-            if (history.children.length === 1) {
-                noHistory.style.display = 'none';
+            if (history.children.length === 1) { // 初回表示時
+                noHistory.style.display = 'none'; // 初回の「履歴が表示されます」を非表示にする
             }
 
             const newItem = document.createElement('div');
@@ -137,7 +195,7 @@
 
         function updateClosingTime() {
             const closingTime = new Date();
-            closingTime.setHours(23, 50, 0);
+            closingTime.setHours(23, 50, 0); // 閉店時間を23:50に設定
 
             function updateTime() {
                 const now = new Date();
@@ -154,44 +212,6 @@
 
             updateTime();
             setInterval(updateTime, 1000);
-        }
-
-        async function fetchWeather() {
-            const apiKey = 'd6ef0d97b5b4b5e7970ba199d68de8e1'; // OpenWeatherMap APIキー
-            const city = 'Nagoya,jp'; // 名古屋の天気データ
-            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=ja`;
-
-            try {
-                const response = await fetch(apiUrl);
-                const data = await response.json();
-
-                const temperature = data.main.temp;
-                const precipitationProbability = data.rain ? (data.rain['1h'] || 0) * 100 : 0;
-
-                let color = '#ffffff'; // 白
-                if (precipitationProbability > 75) {
-                    color = '#ff0000'; // 赤
-                } else if (precipitationProbability > 50) {
-                    color = '#ffff00'; // 黄
-                } else if (precipitationProbability > 25) {
-                    color = '#00ff00'; // 緑
-                } else if (precipitationProbability > 10) {
-                    color = '#0000ff'; // 青
-                }
-
-                const weatherEmoji = precipitationProbability > 50 ? '🌧️' : '☀️';
-
-                document.getElementById('weather').innerHTML = `
-                    <div class="weather-info">
-                        <span>気温: ${temperature}℃</span>
-                        <span style="color: ${color};">降水確率: ${precipitationProbability}%</span>
-                        <span>${weatherEmoji}</span>
-                    </div>
-                `;
-            } catch (error) {
-                console.error('Weather data fetch error:', error);
-                document.getElementById('weather').innerHTML = '天気情報の取得に失敗しました';
-            }
         }
 
         document.getElementById('exchange-btn').addEventListener('click', updateResult);
